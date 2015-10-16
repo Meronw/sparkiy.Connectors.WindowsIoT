@@ -17,7 +17,7 @@ namespace sparkiy.Connectors.IoT.Windows
 
 		public DeviceApi()
 		{
-			this.client = new RestClient("http://sparkiyhubaleks:8080", "Administrator", "lqYo9c6MvwvPjWD");
+			this.client = new RestClient(":8080", "Administrator", "");
 		}
 
 
