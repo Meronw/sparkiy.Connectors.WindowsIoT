@@ -1,3 +1,5 @@
+using System;
+
 namespace sparkiy.Connectors.IoT.Windows
 {
 	/// <summary>
@@ -5,6 +7,33 @@ namespace sparkiy.Connectors.IoT.Windows
 	/// </summary>
 	public class Connection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Connection"/> class.
+		/// </summary>
+		public Connection()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Connection"/> class.
+		/// </summary>
+		/// <param name="machineName">Name of the machine.</param>
+		/// <param name="port">The port.</param>
+		/// <exception cref="System.ArgumentNullException">
+		/// machineName
+		/// or
+		/// port
+		/// </exception>
+		public Connection(string machineName, string port)
+		{
+			if (string.IsNullOrWhiteSpace(machineName)) throw new ArgumentNullException(nameof(machineName));
+			if (string.IsNullOrWhiteSpace(port)) throw new ArgumentNullException(nameof(port));
+
+			this.MachineName = machineName;
+			this.RestApiPort = port;
+		}
+
+
 		/// <summary>
 		/// Gets or sets the name of the machine.
 		/// </summary>

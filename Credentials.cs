@@ -1,3 +1,5 @@
+using System;
+
 namespace sparkiy.Connectors.IoT.Windows
 {
 	/// <summary>
@@ -5,6 +7,33 @@ namespace sparkiy.Connectors.IoT.Windows
 	/// </summary>
 	public class Credentials
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Credentials"/> class.
+		/// </summary>
+		public Credentials()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Credentials"/> class.
+		/// </summary>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">The password.</param>
+		/// <exception cref="System.ArgumentNullException">
+		/// userName
+		/// or
+		/// password
+		/// </exception>
+		public Credentials(string userName, string password)
+		{
+			if (string.IsNullOrWhiteSpace(userName)) throw new ArgumentNullException(nameof(userName));
+			if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+
+			this.UserName = userName;
+			this.Password = password;
+		}
+
+
 		/// <summary>
 		/// Gets or sets the user name of the user.
 		/// </summary>
