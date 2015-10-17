@@ -7,7 +7,7 @@
     <ProjectGuid>{130C072C-07B2-48A1-B060-7FD18C416FA3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sparkiy.Connectors.WindowsIoT</RootNamespace>
+    <RootNamespace>sparkiy.Connectors.IoT.Windows</RootNamespace>
     <AssemblyName>sparkiy.Connectors.WindowsIoT</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
@@ -107,6 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection.cs" />
+    <Compile Include="Credentials.cs" />
     <Compile Include="DeviceApi.cs" />
     <Compile Include="IDeviceApi.cs" />
     <Compile Include="IRestClient.cs" />
