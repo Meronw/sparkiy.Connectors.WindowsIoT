@@ -13,7 +13,8 @@ namespace sparkiy.Connectors.IoT.Windows
 		private const string GetInstalledAppXPackagesApiPath = "/api/appx/packagemanager/packages";
 		private const string GetIpConfigApiPath = "/api/networking/ipconfig";
 		private const string GetComputerNameApiPath = "/api/os/machinename";
-		private const string GetSoftwareInfoApiPath = "/api/os/info";
+		private const string SetComputerNameApiPath = "api/iot/device/name?{0}";
+        private const string GetSoftwareInfoApiPath = "/api/os/info";
 
 		private Connection currentConnection;
 		private Credentials currentCredentials;
@@ -26,6 +27,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// <value>
 		/// The connection information.
 		/// </value>
+		// ReSharper disable once UnusedMember.Global
 		public Connection Connection
 		{
 			get { return this.currentConnection; }
@@ -38,6 +40,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// <value>
 		/// The credentials.
 		/// </value>
+		// ReSharper disable once UnusedMember.Global
 		public Credentials Credentials
 		{
 			get { return this.currentCredentials; }
@@ -52,6 +55,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// If you use empty constructor, you should call <see cref="Initialize"/> right after constructor 
 		/// in order to set connection information and credentials data.
 		/// </remarks>
+		// ReSharper disable once UnusedMember.Global
 		public DeviceApi()
 		{
 		}
@@ -66,6 +70,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// or
 		/// credentials
 		/// </exception>
+		// ReSharper disable once UnusedMember.Global
 		public DeviceApi(Connection connection, Credentials credentials)
 		{
 			if (connection == null) throw new ArgumentNullException(nameof(connection));
@@ -85,6 +90,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// or
 		/// credentials
 		/// </exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		public void Initialize(Connection connection, Credentials credentials)
 		{
 			if (connection == null) throw new ArgumentNullException(nameof(connection));
@@ -105,6 +111,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// <exception cref="System.ArgumentNullException">
 		/// connection
 		/// </exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		protected void SetConnection(Connection connection, bool suppressReinitialization = false)
 		{
 			if (connection == null) throw new ArgumentNullException(nameof(connection));
@@ -126,6 +133,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// <exception cref="System.ArgumentNullException">
 		/// credentials
 		/// </exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		protected void SetCredentials(Credentials credentials, bool suppressReinitialization = false)
 		{
 			if (credentials == null) throw new ArgumentNullException(nameof(credentials));
@@ -145,6 +153,7 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// or
 		/// Set Credentials before initializing client.
 		/// </exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		protected void ReinitializeClient()
 		{
 			if (this.currentConnection == null) throw new NullReferenceException("Set Connection information before initializing client.");
@@ -160,6 +169,20 @@ namespace sparkiy.Connectors.IoT.Windows
 		public async Task<MachineName> GetMachineNameAsync()
 		{
 			return await GetDeserializedAsync<MachineName>(GetComputerNameApiPath);
+		}
+
+		/// <summary>
+		/// Sets the machine name.
+		/// </summary>
+		/// <param name="machineName">New name of the machine.</param>
+		/// <exception cref="System.ArgumentException">Argument is null or whitespace</exception>
+		public async Task SetMachineNameAsync(string machineName)
+		{
+			if (string.IsNullOrWhiteSpace(machineName))
+				throw new ArgumentException("Argument is null or whitespace", nameof(machineName));
+
+			// Send the request
+			await this.SendAsync(string.Format(SetComputerNameApiPath, machineName), null);
 		}
 
 		/// <summary>
@@ -190,6 +213,25 @@ namespace sparkiy.Connectors.IoT.Windows
 		}
 
 		/// <summary>
+		/// Serializes and sends data to given path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="data">The data to serialize.</param>
+		/// <exception cref="System.ArgumentException">Argument is null or whitespace</exception>
+		/// <exception cref="System.ArgumentNullException">data</exception>
+		// ReSharper disable once MemberCanBePrivate.Global
+		protected async Task SendAsync(string path, object data)
+		{
+			if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Argument is null or whitespace", nameof(path));
+			
+			// Serialize data
+			var serializedData = data != null ? JsonConvert.SerializeObject(data) : null;
+			
+			// POST JSON data
+			await client.PostAsync(path, serializedData);
+		}
+
+		/// <summary>
 		/// Gets and deserialized data from given path.
 		/// </summary>
 		/// <typeparam name="T">Type into which data needs to be deserialized to.</typeparam>
@@ -199,8 +241,12 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// retrieved using REST API client GET request. If retrieving or deserialization 
 		/// fails - returns <c>default(<see cref="T"/>)</c>.
 		/// </returns>
+		/// <exception cref="System.ArgumentException">Argument is null or whitespace</exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		protected async Task<T> GetDeserializedAsync<T>(string path)
 		{
+			if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Argument is null or whitespace", nameof(path));
+
 			// Retrieve JSON data
 			var dataJson = await client.GetAsync(path);
 			if (dataJson == null)
@@ -221,8 +267,12 @@ namespace sparkiy.Connectors.IoT.Windows
 		/// Returns new instance of <see cref="T"/> populated with values from given data. 
 		/// If deserialization fails - returns <c>default(<see cref="T"/>)</c>.
 		/// </returns>
+		/// <exception cref="System.ArgumentNullException">data</exception>
+		// ReSharper disable once MemberCanBePrivate.Global
 		protected static T TryDeserialize<T>(string data)
 		{
+			if (data == null) throw new ArgumentNullException(nameof(data));
+
 			try
 			{
 				return JsonConvert.DeserializeObject<T>(data);

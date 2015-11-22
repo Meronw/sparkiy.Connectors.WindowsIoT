@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace sparkiy.Connectors.IoT.Windows
@@ -53,6 +54,34 @@ namespace sparkiy.Connectors.IoT.Windows
 				{
 					// TODO Log the error
 					return null;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Sends the data to REST API using POST method.
+		/// </summary>
+		/// <param name="path">The path (excluding base address which is set in <see cref="Connection" />).</param>
+		/// <param name="data">The data to send as content.</param>
+		public async Task PostAsync(string path, string data)
+		{
+			using (var client = this.GetClientHttp())
+			{
+				try
+				{
+					var content = new StringContent(data ?? string.Empty, Encoding.ASCII, "application/json");
+					var result = await client.PostAsync(path, content);
+					
+					// Read content
+					var responseContent = await result.Content.ReadAsStringAsync();
+
+					// Check result
+					if (!result.IsSuccessStatusCode)
+						throw new InvalidOperationException(string.Format("Failed to retrieve data from device. {0}", responseContent));
+				}
+				catch (Exception)
+				{
+					// TODO Log the error
 				}
 			}
 		}

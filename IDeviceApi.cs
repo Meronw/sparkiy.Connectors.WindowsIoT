@@ -16,6 +16,12 @@ namespace sparkiy.Connectors.IoT.Windows
 		Task<MachineName> GetMachineNameAsync();
 
 		/// <summary>
+		/// Sets the machine name.
+		/// </summary>
+		/// <param name="machineName">New name of the machine.</param>
+		Task SetMachineNameAsync(string machineName);
+
+		/// <summary>
 		/// Gets the software information.
 		/// </summary>
 		/// <returns>Returns <see cref="SoftwareInfo"/> that is populated with data from device.</returns>
